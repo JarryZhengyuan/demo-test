@@ -15,11 +15,13 @@
         <title>My first PHP Website</title>
     </head>
     <body>
-    	<form action="index.php" method="POST">
+    	 <form action="index.php" method="POST">
            Enter Username: <input type="text" name="username" required="required" /> <br/>
            Enter password: <input type="password" name="password" required="required" /> <br/>
            <input type="submit" name="submit" value="Register"/>
         </form>
+
+        <a href="www.google.com"><img src="artic.PNG"></a>
 
     <?php
 
