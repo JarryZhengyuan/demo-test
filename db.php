@@ -1,9 +1,9 @@
 <?php
 
-    $servername = "localhost";
+    $servername = "j-test-db.c6irg67q3gip.ap-southeast-1.rds.amazonaws.com";
     $username = "root";
-    $password = "p@ssw0rd";
-    $dbname = "demo-test";
+    $password = "passw0rd";
+    $dbname = "demo_test";
 
     $conn = mysqli_connect($servername, $username, $password, $dbname);
 
