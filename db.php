@@ -1,6 +1,6 @@
 <?php
 
-    $servername = "j-test-db.c6irg67q3gip.ap-southeast-1.rds.amazonaws.com";
+    $servername = "demo-test.c6irg67q3gip.ap-southeast-1.rds.amazonaws.com";
     $username = "root";
     $password = "passw0rd";
     $dbname = "demo_test";
