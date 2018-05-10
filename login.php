@@ -1,7 +1,58 @@
 <?php
 session_start();
 session_destroy();
+$user = "";
+$pass = "";
+$msg = "";
+
+if ($_SERVER['REQUEST_METHOD'] == 'POST'){
+	include 'sql.php';
+
+	$user = $_POST['uname'];
+	$pass = $_POST['pword'];
+		
+	//unwanted HTML (scripting attacks)
+	$user = htmlspecialchars($user);
+	$pass = htmlspecialchars($pass);
+	
+	$SQL = "SELECT * FROM info";
+	$result = mysql_query($SQL);
+	while ($db_field = mysql_fetch_assoc($result)) {
+		$a = $db_field['username'];
+		$b = $db_field['password'];
+		$pos = $db_field['position'];
+		if(($user == $a) AND ($pass == $b)){
+			if($pos == "admin"){
+				session_start();
+				$_SESSION['username'] = $user;
+				$_SESSION['admin'] = "log";
+				mysql_close($db_handle);
+				header("Location: admin.php");
+				break;
+			}
+			else if($pos == "leader"){
+				session_start();
+				$_SESSION['username'] = $user;
+				$_SESSION['leader'] = "log";
+				mysql_close($db_handle);
+				header("Location: leader.php");
+				break;
+			}
+			else if($pos == "member"){
+				session_start();
+				$_SESSION['username'] = $user;
+				$_SESSION['member'] = "log";
+				mysql_close($db_handle);
+				header("Location: member.php");
+				break;
+			}
+		}
+	}
+	$msg = "Check username and/or password.";
+	mysql_close($db_handle);
+}
 ?>
+
 
 <html>
 <head>
@@ -24,6 +75,7 @@ session_destroy();
 <tr><td>
 <a href = "about.php"><img border = "none" src = "images/about.gif"></img></a>
 </td></tr>
+
 </table>
 <div style="top:0; left:170; position:absolute; z-index:1;">
 <img src = "images/image002.gif"></img>
@@ -50,6 +102,12 @@ session_destroy();
 </form>
 </div>
 
+<div style="top:270; left:383; position:absolute; z-index:1;">
+<?php
+	print "<font color = 'red'>$msg</font>";
+?>
+</div>
+
 <div style="top:150; left:800; position:absolute; z-index:1;">
 <img src = "images/image002.gif"></img>
 
@@ -66,6 +124,5 @@ session_destroy();
 <div style="top:550; left:300; position:absolute; z-index:1;">
 <img border = "none" src = "images/maulawka.gif"></img>
 </div>
-
 </body>
 </html>
