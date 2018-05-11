@@ -1,128 +1,107 @@
 <?php
-session_start();
-session_destroy();
-$user = "";
-$pass = "";
-$msg = "";
+include("php/dbconnect.php");
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST'){
-	include 'sql.php';
+$error = '';
+if(isset($_POST['login']))
+{
 
-	$user = $_POST['uname'];
-	$pass = $_POST['pword'];
-		
-	//unwanted HTML (scripting attacks)
-	$user = htmlspecialchars($user);
-	$pass = htmlspecialchars($pass);
-	
-	$SQL = "SELECT * FROM info";
-	$result = mysql_query($SQL);
-	while ($db_field = mysql_fetch_assoc($result)) {
-		$a = $db_field['username'];
-		$b = $db_field['password'];
-		$pos = $db_field['position'];
-		if(($user == $a) AND ($pass == $b)){
-			if($pos == "admin"){
-				session_start();
-				$_SESSION['username'] = $user;
-				$_SESSION['admin'] = "log";
-				mysql_close($db_handle);
-				header("Location: admin.php");
-				break;
-			}
-			else if($pos == "leader"){
-				session_start();
-				$_SESSION['username'] = $user;
-				$_SESSION['leader'] = "log";
-				mysql_close($db_handle);
-				header("Location: leader.php");
-				break;
-			}
-			else if($pos == "member"){
-				session_start();
-				$_SESSION['username'] = $user;
-				$_SESSION['member'] = "log";
-				mysql_close($db_handle);
-				header("Location: member.php");
-				break;
-			}
-		}
-	}
-	$msg = "Check username and/or password.";
-	mysql_close($db_handle);
+$username =  mysqli_real_escape_string($conn,trim($_POST['username']));
+$password =  mysqli_real_escape_string($conn,$_POST['password']);
+
+if($username=='' || $password=='')
+{
+$error='All fields are required';
 }
+
+$sql = "select * from user where username='".$username."' and password = '".md5($password)."'";
+
+$q = $conn->query($sql);
+if($q->num_rows==1)
+{
+$res = $q->fetch_assoc();
+$_SESSION['rainbow_username']=$res['username'];
+$_SESSION['rainbow_uid']=$res['id'];
+$_SESSION['rainbow_name']=$res['name'];
+echo '<script type="text/javascript">window.location="index.php"; </script>';
+
+}else
+{
+$error = 'Invalid Username or Password';
+}
+
+}
+
 ?>
 
 
-<html>
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
-<title>Home
-</title>
+      <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rainbow English Classes</title>
+
+    <!-- BOOTSTRAP STYLES-->
+    <link href="css/bootstrap.css" rel="stylesheet" />
+    <!-- FONTAWESOME STYLES-->
+    <link href="css/font-awesome.css" rel="stylesheet" />
+    <!-- GOOGLE FONTS-->
+    <link href='http://fonts.googleapis.com/css?family=Open+Sans' rel='stylesheet' type='text/css' />
+<style>
+.myhead{
+margin-top:0px;
+margin-bottom:0px;
+text-align:center;
+}
+</style>
+
 </head>
-<body link="#0066FF" vlink="#6633CC" bgcolor="#FFFFCC" background="images/image001.jpg" style='margin:0'>
+<body >
+    <div class="container">
+        
+         <div class="row ">
+               
+                <div class="col-md-4 col-md-offset-4 col-sm-6 col-sm-offset-3 col-xs-10 col-xs-offset-1">
+                          
+                            <div class="panel-body" style="background-color: #E2E2E2; margin-top:50px; border:solid 3px #0e0e0e;">
+							  <h3 class="myhead">Rainbow English Classes</h3>
+                                <form role="form" action="login.php" method="post">
+                                    <hr />
+									<?php
+									if($error!='')
+									{									
+									echo '<h5 class="text-danger text-center">'.$error.'</h5>';
+									}
+									?>
+									
+                                   
+                                     <div class="form-group input-group">
+                                            <span class="input-group-addon"><i class="fa fa-tag"  ></i></span>
+                                            <input type="text" class="form-control" placeholder="Your Username " name="username" required />
+                                        </div>
+                                        
+									<div class="form-group input-group">
+                                            <span class="input-group-addon"><i class="fa fa-lock"  ></i></span>
+                                            <input type="password" class="form-control"  placeholder="Your Password" name="password" required />
+                                        </div>
+										
+                                    <div class="form-group">
+                                           
+                                            <span class="pull-right">
+                                                   <a href="index.html" >Forget password ? </a> 
+                                            </span>
+                                     </div>
+                                     
+                                     <button class="btn btn-primary" type= "submit" name="login">Login Now</button>
+                                   
+                                    </form>
+                            </div>
+                           
+                        </div>
+                
+                
+        </div>
+    </div>
 
-<div style="top:20; left:270; position:absolute; z-index:1;">
-<h1>Online Task Management System</h1>
-</div>
-
-<div style="top:150; left:20; position:absolute; z-index:1;">
-
-<table>
-<tr><td>
-<a href = "index.php"><img border = "none" src = "images/home.gif"></img></a>
-</td></tr>
-
-<tr><td>
-<a href = "about.php"><img border = "none" src = "images/about.gif"></img></a>
-</td></tr>
-
-</table>
-<div style="top:0; left:170; position:absolute; z-index:1;">
-<img src = "images/image002.gif"></img>
-</div>
-
-</div>
-
-
-<div style="top:220; left:370; position:absolute; z-index:1;">
-<form name='login_form' method='post' action='login.php'>
-	<b>
-	<font face = "times new roman" size = "3">
-	<div style="top:0; left:0; width:250px; position:absolute; z-index:1;">
-	Username: <input name = 'uname' type = 'text' value = ''>
-	</div>
-	<div style="top:25; left:0; width:250px; position:absolute; z-index:1;">
-	Password   : <input name = 'pword' type = 'password' value = ''>
-	</div>
-	<div style="top:70; left:165; position:absolute; z-index:1;">
-	<input name = 'login' type = 'submit' value = 'Login'>
-	</div>
-	</font>
-	</b>
-</form>
-</div>
-
-<div style="top:270; left:383; position:absolute; z-index:1;">
-<?php
-	print "<font color = 'red'>$msg</font>";
-?>
-</div>
-
-<div style="top:150; left:800; position:absolute; z-index:1;">
-<img src = "images/image002.gif"></img>
-
-<div style="top:50; left:10; position:absolute; z-index:1;">
-<a href = "verify.php"><img src = "images/verify.gif" border = "0"></img></a>
-</div>
-
-<div style="top:100; left:10; position:absolute; z-index:1;">
-<a href = "signup.php"><img src = "images/signup.gif" border = "0"></img></a>
-</div>
-
-</div>
-
-<div style="top:550; left:300; position:absolute; z-index:1;">
-<img border = "none" src = "images/maulawka.gif"></img>
-</div>
 </body>
 </html>
